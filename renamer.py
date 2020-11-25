@@ -12,11 +12,17 @@ class renamer:
         for i in range(10):
             os.system("rm lib" + str(i) + removeString + "." + targetFileExt)
 
-    def addFileName(self, addValue, targetFileExt = "js"):
+    def addAfterFileName(self, addValue, targetFileExt = "js"):
         for i in glob.glob('*.' + targetFileExt):
             fileStruct = os.path.splitext(i)
             if (addValue not in fileStruct[0]):
                 os.rename(i,fileStruct[0] + addValue + "." + targetFileExt)
+
+    def addBeforeFileName(self, addValue, targetFileExt = "js"):
+        for i in glob.glob('*.' + targetFileExt):
+            fileStruct = os.path.splitext(i)
+            if (addValue not in fileStruct[0]):
+                os.rename(i,addValue + fileStruct[0] + "." + targetFileExt)
 
     def removeFileName(self, addValue, targetFileExt = "js"):
         for i in glob.glob('*.' + targetFileExt):
@@ -25,13 +31,15 @@ class renamer:
                 os.rename(i,fileStruct[0].replace(addValue, "").replace("-", "") +  "." + targetFileExt)
 
 parser = argparse.ArgumentParser(
-    prog="Renamer",
+    prog="renamer",
     description="to edit and modify filename"
 )
 
 parser.add_argument("FileTypeExt", help="target file type extension to add after name")
-parser.add_argument("-a", "--AddAfterName", help="add string after filename without hyphen")
-parser.add_argument("-ah", "--AddAfterNameWithHyphen", help="add string after filename with hyphen")
+parser.add_argument("-af", "--AddAfterName", help="add string after filename")
+parser.add_argument("-afh", "--AddAfterNameWithHyphen", help="add string after filename with hyphen")
+parser.add_argument("-ab", "--AddBeforeName", help="add string before filename")
+parser.add_argument("-abh", "--AddBeforeNameWithHyphen", help="add string before filename with hyphen")
 parser.add_argument("-r", "--removeAfterName", help="remove after name of specified type file")
 args = parser.parse_args()
 
@@ -39,8 +47,14 @@ renamer = renamer()
 
 if (args.AddAfterNameWithHyphen):
     AddAfterNameWithHyphen = "-" + args.AddAfterNameWithHyphen
-    renamer.addFileName(AddAfterNameWithHyphen, args.FileTypeExt)
+    renamer.addAfterFileName(AddAfterNameWithHyphen, args.FileTypeExt)
+if (args.AddBeforeName):
+    AddBeforeName = args.AddBeforeName
+    renamer.addBeforeFileName(AddBeforeName, args.FileTypeExt)
+if (args.AddBeforeNameWithHyphen):
+    AddBeforeNameWithHyphen = args.AddBeforeNameWithHyphen + "-"
+    renamer.addBeforeFileName(AddBeforeNameWithHyphen, args.FileTypeExt)
 if (args.removeAfterName):
     renamer.removeFileName(args.removeAfterName, args.FileTypeExt)
 if (args.AddAfterName):
-    renamer.addFileName(args.AddAfterName, args.FileTypeExt)
+    renamer.addAfterFileName(args.AddAfterName, args.FileTypeExt)
